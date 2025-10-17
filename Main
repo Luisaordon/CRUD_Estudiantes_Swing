@@ -1,0 +1,7 @@
+import vista.FormularioEstudiante;
+
+public class Main {
+    public static void main(String[] args) {
+        new FormularioEstudiante().setVisible(true);
+    }
+}
