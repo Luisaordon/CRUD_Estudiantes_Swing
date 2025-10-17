@@ -1,0 +1,36 @@
+package modelo;
+
+public class Estudiante {
+    private int id;
+    private String nombre;
+    private String correo;
+    private int edad;
+    private String carrera;
+
+    public Estudiante(int id, String nombre, String correo, int edad, String carrera) {
+        this.id = id;
+        this.nombre = nombre;
+        this.correo = correo;
+        this.edad = edad;
+        this.carrera = carrera;
+    }
+
+    public Estudiante(String nombre, String correo, int edad, String carrera) {
+        this.nombre = nombre;
+        this.correo = correo;
+        this.edad = edad;
+        this.carrera = carrera;
+    }
+
+    public int getId() { return id; }
+    public String getNombre() { return nombre; }
+    public String getCorreo() { return correo; }
+    public int getEdad() { return edad; }
+    public String getCarrera() { return carrera; }
+
+    public void setId(int id) { this.id = id; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    public void setCorreo(String correo) { this.correo = correo; }
+    public void setEdad(int edad) { this.edad = edad; }
+    public void setCarrera(String carrera) { this.carrera = carrera; }
+}
