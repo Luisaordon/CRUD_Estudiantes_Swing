@@ -1,0 +1,76 @@
+package controlador;
+
+import modelo.ConexionBD;
+import modelo.Estudiante;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+
+
+public class EstudianteDAO {
+
+    private ConexionBD conexionBD = new ConexionBD();
+
+    public void agregarEstudiante(Estudiante est) {
+        String sql = "INSERT INTO estudiantes (nombre, correo, programa) VALUES (?, ?, ?)";
+        try (Connection con = conexionBD.conectar();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, est.getNombre());
+            ps.setString(2, est.getCorreo());
+            ps.setString(3, est.getPrograma());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error al agregar: " + e.getMessage());
+        }
+    }
+
+    public void actualizarEstudiante(Estudiante est) {
+        String sql = "UPDATE estudiantes SET nombre=?, correo=?, programa=? WHERE id=?";
+        try (Connection con = conexionBD.conectar();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, est.getNombre());
+            ps.setString(2, est.getCorreo());
+            ps.setString(3, est.getPrograma());
+            ps.setInt(4, est.getId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error al actualizar: " + e.getMessage());
+        }
+    }
+
+    public void eliminarEstudiante(int id) {
+        String sql = "DELETE FROM estudiantes WHERE id=?";
+        try (Connection con = conexionBD.conectar();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error al eliminar: " + e.getMessage());
+        }
+    }
+
+    public ArrayList<Estudiante> listarEstudiantes() {
+        ArrayList<Estudiante> lista = new ArrayList<>();
+        String sql = "SELECT * FROM estudiantes";
+        try (Connection con = conexionBD.conectar();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Estudiante est = new Estudiante();
+                est.setId(rs.getInt("id"));
+                est.setNombre(rs.getString("nombre"));
+                est.setCorreo(rs.getString("correo"));
+                est.setPrograma(rs.getString("programa"));
+                lista.add(est);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al listar: " + e.getMessage());
+        }
+        return lista;
+    }
+}
