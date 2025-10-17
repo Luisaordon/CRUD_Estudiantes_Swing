@@ -1,0 +1,24 @@
+package controlador;
+
+import modelo.Estudiante;
+import java.util.ArrayList;
+
+public class ControladorEstudiante {
+    private EstudianteDAO dao = new EstudianteDAO();
+
+    public void agregarEstudiante(Estudiante est) {
+        dao.agregarEstudiante(est);
+    }
+
+    public void actualizarEstudiante(Estudiante est) {
+        dao.actualizarEstudiante(est);
+    }
+
+    public void eliminarEstudiante(int id) {
+        dao.eliminarEstudiante(id);
+    }
+
+    public ArrayList<Estudiante> listarEstudiantes() {
+        return dao.listarEstudiantes();
+    }
+}
