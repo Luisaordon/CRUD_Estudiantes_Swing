@@ -1,0 +1,185 @@
+package vista;
+
+import controlador.ControladorEstudiante;
+import modelo.Estudiante;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.event.*;
+import java.util.ArrayList;
+
+
+public class FormularioEstudiante extends JFrame {
+    ControladorEstudiante controlador = new ControladorEstudiante();
+    DefaultTableModel modeloTabla = new DefaultTableModel();
+
+    JTextField txtId, txtNombre, txtCorreo, txtPrograma;
+    JTable tabla;
+
+    public FormularioEstudiante() {
+        setTitle("Gestión de Estudiantes");
+        setSize(700, 500);
+        setLayout(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+
+        
+        txtId = new JTextField(); 
+
+        JLabel lblNombre = new JLabel("Nombre:");
+        lblNombre.setBounds(30, 30, 100, 30);
+        add(lblNombre);
+
+        txtNombre = new JTextField();
+        txtNombre.setBounds(120, 30, 200, 30);
+        add(txtNombre);
+
+        JLabel lblCorreo = new JLabel("Correo:");
+        lblCorreo.setBounds(30, 80, 100, 30);
+        add(lblCorreo);
+
+        txtCorreo = new JTextField();
+        txtCorreo.setBounds(120, 80, 200, 30);
+        add(txtCorreo);
+
+        JLabel lblPrograma = new JLabel("Programa:");
+        lblPrograma.setBounds(30, 130, 100, 30);
+        add(lblPrograma);
+
+        txtPrograma = new JTextField();
+        txtPrograma.setBounds(120, 130, 200, 30);
+        add(txtPrograma);
+
+        JButton btnAgregar = new JButton("Agregar");
+        btnAgregar.setBounds(350, 30, 120, 30);
+        add(btnAgregar);
+
+        JButton btnActualizar = new JButton("Actualizar");
+        btnActualizar.setBounds(350, 80, 120, 30);
+        add(btnActualizar);
+
+        JButton btnEliminar = new JButton("Eliminar");
+        btnEliminar.setBounds(350, 130, 120, 30);
+        add(btnEliminar);
+
+       
+        tabla = new JTable();
+        modeloTabla.addColumn("ID");
+        modeloTabla.addColumn("Nombre");
+        modeloTabla.addColumn("Correo");
+        modeloTabla.addColumn("Programa");
+        tabla.setModel(modeloTabla);
+
+        JScrollPane scroll = new JScrollPane(tabla);
+        scroll.setBounds(30, 200, 600, 200);
+        add(scroll);
+
+        
+      btnAgregar.addActionListener(new ActionListener() {
+    public void actionPerformed(ActionEvent e) {
+        agregar();
+    }
+});
+
+btnActualizar.addActionListener(new ActionListener() {
+    public void actionPerformed(ActionEvent e) {
+        actualizar();
+    }
+});
+
+btnEliminar.addActionListener(new ActionListener() {
+    public void actionPerformed(ActionEvent e) {
+        eliminar();
+    }
+});
+
+
+        tabla.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cargarCampos();
+            }
+        });
+              mostrarDatos();
+    }
+    
+    private void cargarCampos() {
+        int fila = tabla.getSelectedRow();
+        if (fila >= 0) {
+            
+            txtNombre.setText(modeloTabla.getValueAt(fila, 1).toString());
+            txtCorreo.setText(modeloTabla.getValueAt(fila, 2).toString());
+            txtPrograma.setText(modeloTabla.getValueAt(fila, 3).toString());
+        }
+    }
+
+    private void agregar() {
+        if (txtNombre.getText().trim().isEmpty() || txtCorreo.getText().trim().isEmpty() || txtPrograma.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios para agregar.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Estudiante est = new Estudiante(0, txtNombre.getText(), txtCorreo.getText(), txtPrograma.getText());
+        controlador.agregarEstudiante(est);
+        mostrarDatos();
+        limpiarCampos();
+        JOptionPane.showMessageDialog(this, "Estudiante agregado con éxito.");
+    }
+
+    private void actualizar() {
+        int fila = tabla.getSelectedRow();
+        if (fila >= 0) {
+            if (txtNombre.getText().trim().isEmpty() || txtCorreo.getText().trim().isEmpty() || txtPrograma.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios para actualizar.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            try {
+                
+                int id = Integer.parseInt(modeloTabla.getValueAt(fila, 0).toString());
+                Estudiante est = new Estudiante(id, txtNombre.getText(), txtCorreo.getText(), txtPrograma.getText());
+                controlador.actualizarEstudiante(est);
+                mostrarDatos();
+                limpiarCampos();
+                JOptionPane.showMessageDialog(this, "Estudiante actualizado con éxito.");
+            } catch (NumberFormatException e) {
+                 JOptionPane.showMessageDialog(null, "Error al obtener el ID del estudiante.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Seleccione un registro para actualizar", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    private void eliminar() {
+        int fila = tabla.getSelectedRow();
+        if (fila >= 0) {
+            int opcion = JOptionPane.showConfirmDialog(this, "¿Está seguro que desea eliminar el estudiante seleccionado?", "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
+            if (opcion == JOptionPane.YES_OPTION) {
+                 try {
+                    int id = Integer.parseInt(modeloTabla.getValueAt(fila, 0).toString());
+                    controlador.eliminarEstudiante(id);
+                    mostrarDatos();
+                    limpiarCampos();
+                    JOptionPane.showMessageDialog(this, "Estudiante eliminado con éxito.");
+                 } catch (NumberFormatException e) {
+                     JOptionPane.showMessageDialog(null, "Error al obtener el ID del estudiante.", "Error", JOptionPane.ERROR_MESSAGE);
+                 }
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Seleccione un registro para eliminar", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    private void mostrarDatos() {
+        modeloTabla.setRowCount(0);
+        ArrayList<Estudiante> lista = controlador.listarEstudiantes();
+        for (Estudiante e : lista) {
+            modeloTabla.addRow(new Object[]{e.getId(), e.getNombre(), e.getCorreo(), e.getPrograma()});
+        }
+    }
+
+    private void limpiarCampos() {
+        txtNombre.setText("");
+        txtCorreo.setText("");
+        txtPrograma.setText("");
+        tabla.clearSelection(); 
+    }
+}
